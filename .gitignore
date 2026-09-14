@@ -2,3 +2,6 @@
 ragenv/
 __pycache__/
 *.pyc
+
+docs/
+faiss_db/
