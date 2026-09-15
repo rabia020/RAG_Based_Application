@@ -1,6 +1,7 @@
 import os
 import shutil
 import streamlit as st
+import streamlit.components.v1 as components
 
 from dotenv import load_dotenv
 from groq import Groq
@@ -150,36 +151,98 @@ def inject_css():
             background-color: var(--accent-hover);
             color:white;
         }
-        section[data-testid="stSidebar"] .secondary-btn button{
-            background-color: transparent !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            color: #ece7de !important;
+        /* Sidebar "Clear chat" -> quiet ghost row (image 2) */
+        .sidebar-ghost-btn{
+            background:transparent !important;
+            border:none !important;
+            box-shadow:none !important;
+            color:#cfc8ba !important;
+            justify-content:flex-start;
+            font-weight:500;
+            height:auto !important;
+            width:100%;
+        }
+        .sidebar-ghost-btn:hover{
+            background:rgba(255,255,255,0.06) !important;
+            color:#ffffff !important;
+        }
+        /* Round subtle delete buttons */
+        .btn-icon-danger{
+            background:transparent !important;
+            border:1px solid rgba(255,255,255,0.15) !important;
+            color:#ece7de !important;
+            border-radius:50% !important;
+            width:36px !important;
+            min-width:36px !important;
+            height:36px;
+            padding:0 !important;
+        }
+        .btn-icon-danger:hover{
+            border-color:var(--accent) !important;
+            color:var(--accent) !important;
+            background:rgba(255,255,255,0.06) !important;
         }
 
-        /* File uploader */
+        /* File uploader -> orange "Upload documents" button (image 2) */
         section[data-testid="stSidebar"] [data-testid="stFileUploader"]{
-            background:#1f1d19;
-            border:1px dashed rgba(255,255,255,0.15);
-            border-radius:10px;
-            padding:6px;
+            background:transparent;
+            border:none;
+            padding:0;
         }
         section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]{
-            background:transparent;
+            background:var(--accent);
+            border:none !important;
+            border-radius:10px;
+            min-height:48px;
+            padding:6px 10px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
-        /* Upload documents label text -> black */
-        section[data-testid="stSidebar"] [data-testid="stFileUploader"] label,
-        section[data-testid="stSidebar"] [data-testid="stFileUploader"] label p,
-        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stWidgetLabel"] p{
+        section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]:hover{
+            background:var(--accent-hover);
+        }
+        /* hide the "200MB per file • PDF" line */
+        section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"]{
+            display:none;
+        }
+        /* Replace native inner button with a full-width black-text label (image 2) */
+        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"]{
+            background:transparent !important;
+            border:none !important;
+            box-shadow:none !important;
             color:#111111 !important;
-            font-weight:600;
+            width:100%;
+            min-height:40px;
+            justify-content:center;
+            font-size:0;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"]:hover{
+            background:transparent !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] svg,
+        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] p,
+        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] [data-testid="stIconMaterial"]{
+            display:none !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"]::before{
+            content:"＋  Upload documents";
+            font-size:14px;
+            font-weight:700;
+            color:#111111;
+        }
+        /* Uploaded file chips -> dark cards so names stay readable on orange */
+        section[data-testid="stSidebar"] [data-testid="stFileChip"]{
+            background:#1f1d19 !important;
+            border:1px solid rgba(255,255,255,0.14) !important;
+            border-radius:8px !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileChip"] *,
+        section[data-testid="stSidebar"] [data-testid="stFileChip"] svg{
+            color:#ece7de !important;
         }
 
         /* ---------- HISTORY PANEL ---------- */
-        .history-btn button{
-            background:transparent !important;
-            border:1px solid var(--accent) !important;
-            color: var(--accent) !important;
-        }
         .history-panel{
             background: var(--card-bg);
             border:1px solid var(--border-soft);
@@ -209,14 +272,49 @@ def inject_css():
         }
 
         /* ---------- TOP BAR ---------- */
-        .topbar{
-            display:flex;align-items:center;justify-content:space-between;
-            padding: 6px 0 18px 0;
-            border-bottom: 1px solid var(--border-soft);
-            margin-bottom: 10px;
-        }
         .topbar-left{display:flex;align-items:center;gap:10px;}
         .topbar-title{font-weight:700;font-size:17px;color:var(--text-dark);}
+        .topbar-divider{
+            border-bottom:1px solid var(--border-soft);
+            margin: 0 0 12px 0;
+        }
+        /* History / Clear chat pills (image 2) */
+        .topbar-pill{
+            background:#faf6ee !important;
+            border:1px solid var(--border-soft) !important;
+            color:var(--text-dark) !important;
+            border-radius:999px !important;
+            font-weight:600;
+            font-size:13px;
+            padding:0.45rem 1rem;
+            box-shadow:0 1px 2px rgba(0,0,0,0.04);
+            white-space:nowrap;
+        }
+        .topbar-pill:hover{
+            background:#ffffff !important;
+            border-color:var(--accent) !important;
+            color:var(--accent) !important;
+        }
+        .topbar-pill p{
+            margin-bottom:0;
+        }
+        /* Keep topbar + its buttons on one row at any viewport width */
+        div[data-testid="stMainBlockContainer"] > div > div[data-testid="stHorizontalBlock"]:has(.topbar-left),
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(.topbar-pill){
+            flex-wrap: nowrap !important;
+        }
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(.topbar-pill) > div[data-testid="stColumn"]{
+            flex: 0 1 auto !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+        }
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(.topbar-pill){
+            justify-content: flex-end;
+        }
+        .topbar-pill p{
+            margin-bottom: 0;
+        }
         .chip{
             background:#e0d8c9;
             color:#6d6656;
@@ -252,10 +350,10 @@ def inject_css():
 
         /* Suggested question pill buttons (main area) */
         div[data-testid="stHorizontalBlock"] .stButton > button{
-            background:#f4eee4;
+            background:#faf6ee;
             color:#4a453b;
             border:1px solid var(--border-soft);
-            border-radius:999px;
+            border-radius:8px;
             font-size:13px;
             padding:0.4rem 0.9rem;
         }
@@ -271,21 +369,84 @@ def inject_css():
             border: 1px solid var(--border-soft);
         }
 
-        /* Chat input pinned bottom */
-        [data-testid="stChatInput"]{
-            background: var(--card-bg);
-            border: 1px solid var(--border-soft);
-            border-radius: 16px;
+        /* Bottom dock (chat input) -> blends with page background like image 2 */
+        [data-testid="stBottom"],
+        [data-testid="stBottom"] > div,
+        [data-testid="stBottomBlockContainer"]{
+            background: transparent !important;
         }
-        [data-testid="stChatInput"] textarea{
-            color: var(--text-dark);
+        [data-testid="stBottomBlockContainer"]{
+            position: relative;
+            padding-bottom: 30px !important;
         }
-        .stChatInput button{
-            background-color: var(--accent) !important;
+        /* footnote pinned inside the bottom dock, under the input */
+        [data-testid="stBottomBlockContainer"]::after{
+            content:"Answers stay tied to the pages they came from.";
+            position:absolute;
+            left:26px;
+            bottom:4px;
+            font-size:11px;
+            color:var(--text-muted);
+            pointer-events:none;
         }
 
-        .footnote{
-            font-size:11px;color:var(--text-muted);margin-top:6px;
+        /* Chat input card */
+        [data-testid="stChatInput"]{
+            background: #faf6ee;
+            border: 1px solid rgba(0,0,0,0.10);
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+        [data-testid="stChatInput"] textarea{
+            background: transparent;
+            color: var(--text-dark);
+        }
+        /* Send button -> orange rounded square, bottom-right, paper-plane icon (reference) */
+        [data-testid="stChatInputSubmitButton"]{
+            position: absolute !important;
+            right: 10px;
+            bottom: 10px;
+            width: 38px !important;
+            min-width: 38px !important;
+            height: 38px !important;
+            background-color: var(--accent) !important;
+            color:#ffffff !important;
+            border: none !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(226,98,44,0.35);
+        }
+        [data-testid="stChatInputSubmitButton"]:hover:not(:disabled){
+            background-color: var(--accent-hover) !important;
+        }
+        /* keep it vivid orange even while the input is empty */
+        [data-testid="stChatInputSubmitButton"]:disabled{
+            opacity: 1 !important;
+            background-color: var(--accent) !important;
+        }
+        /* swap Streamlit's up-arrow for a paper-plane glyph */
+        [data-testid="stChatInputSubmitButton"] svg{
+            display: none !important;
+        }
+        [data-testid="stChatInputSubmitButton"]::before{
+            content: "";
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            background: #ffffff;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.01 21 23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.01 21 23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E") center / contain no-repeat;
+        }
+        /* keep typed text clear of the send button */
+        [data-testid="stChatInput"] textarea{
+            padding-right: 60px !important;
+            padding-top: 14px !important;
+            min-height: 62px !important;
+        }
+        [data-testid="stChatInput"]{
+            min-height: 96px;
         }
 
         .status-banner{
@@ -304,6 +465,61 @@ def inject_css():
 
 
 inject_css()
+
+
+def inject_button_tagger():
+    """Tag rendered buttons with semantic classes so CSS can target them.
+
+    Streamlit does not keep markdown wrapper divs around buttons, so we tag
+    them client-side by matching their visible text.
+    """
+
+    components.html(
+        """
+        <script>
+        (function () {
+            const doc = window.parent.document;
+            const TRASH = String.fromCodePoint(0x1F5D1);
+            const rules = [
+                { test: /History/i,           cls: 'topbar-pill' },
+                { test: /Clear chat/i,        cls: 'topbar-pill', notInSidebar: true },
+                { test: /Clear chat/i,        cls: 'sidebar-ghost-btn', inSidebar: true },
+                { test: /Rebuild Knowledge/i, cls: 'btn-accent' },
+                { test: new RegExp('^' + TRASH), cls: 'btn-icon-danger' }
+            ];
+            function tag(root) {
+                if (!root || !root.querySelectorAll) return;
+                root.querySelectorAll('button').forEach(b => {
+                    if (b.dataset.folioTagged) return;
+                    const t = b.textContent || '';
+                    const inSidebar = !!b.closest('[data-testid="stSidebar"]');
+                    rules.forEach(r => {
+                        if (!r.test.test(t)) return;
+                        if (r.inSidebar && !inSidebar) return;
+                        if (r.notInSidebar && inSidebar) return;
+                        b.classList.add(r.cls);
+                        b.dataset.folioTagged = '1';
+                    });
+                });
+            }
+            tag(doc.body);
+            const obs = new MutationObserver(muts => {
+                muts.forEach(m => m.addedNodes.forEach(n => {
+                    if (n.nodeType === 1) {
+                        if (n.tagName === 'BUTTON') tag(n.parentElement || doc.body);
+                        else tag(n);
+                    }
+                }));
+            });
+            obs.observe(doc.body, { childList: true, subtree: true });
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+inject_button_tagger()
 
 
 # ============================================================
@@ -684,14 +900,15 @@ with st.sidebar:
     )
 
     # --------------------------------------------------------
-    # Upload PDFs
+    # Upload PDFs -> single orange "Upload documents" button
     # --------------------------------------------------------
 
     uploaded_files = st.file_uploader(
-        "📥  Upload documents",
+        "Upload documents",
         type=["pdf"],
         accept_multiple_files=True,
-        label_visibility="visible"
+        label_visibility="collapsed",
+        key="pdf_uploader"
     )
 
     if uploaded_files:
@@ -800,7 +1017,6 @@ with st.sidebar:
 
     st.markdown("<hr/>", unsafe_allow_html=True)
 
-    st.markdown('<div class="secondary-btn">', unsafe_allow_html=True)
     if st.button(
         "↺ Clear chat",
         use_container_width=True,
@@ -810,7 +1026,6 @@ with st.sidebar:
         st.session_state.show_history = False
         st.session_state.spotlight_index = None
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ============================================================
@@ -824,24 +1039,20 @@ top_left, top_right = st.columns([3, 1])
 with top_left:
     st.markdown(
         f"""
-        <div class="topbar">
-            <div class="topbar-left">
-                <span class="topbar-title">Reading Room</span>
-                <span class="chip">{len(documents)} sources linked</span>
-            </div>
+        <div class="topbar-left" style="padding:6px 0 12px 0;">
+            <span class="topbar-title">Reading Room</span>
+            <span class="chip">{len(documents)} sources linked</span>
         </div>
         """,
         unsafe_allow_html=True
     )
 
 with top_right:
-    b1, b2 = st.columns(2)
+    b1, b2 = st.columns(2, gap="small")
     with b1:
-        st.markdown('<div class="history-btn">', unsafe_allow_html=True)
         if st.button("🕘 History", use_container_width=True, key="history_btn"):
             st.session_state.show_history = not st.session_state.show_history
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
     with b2:
         if st.button("↺ Clear chat", use_container_width=True, key="topbar_clear_chat"):
             st.session_state.chat = []
@@ -849,10 +1060,7 @@ with top_right:
             st.session_state.spotlight_index = None
             st.rerun()
 
-
-# ============================================================
-# HISTORY PANEL
-# ============================================================
+st.markdown('<div class="topbar-divider"></div>', unsafe_allow_html=True)
 
 if st.session_state.show_history:
 
@@ -986,11 +1194,6 @@ else:
 # ============================================================
 
 chat_question = st.chat_input("Ask your documents a question...")
-
-st.markdown(
-    '<div class="footnote">Answers stay tied to the pages they came from.</div>',
-    unsafe_allow_html=True
-)
 
 
 # ============================================================
